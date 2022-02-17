@@ -16,7 +16,8 @@ operator_probabilities = {
 head_length = 7
 population_size = 300
 generations = 80
+fitness_func = 'r2'
 
 GEPProcess = GeneExpressionProgramming(head_length,func_set,term_set,operator_probabilities)
-GEPProcess.RunGEP(df[['input1','input2']],df['output'],population_size,generations)
+GEPProcess.RunGEP(df[['input1','input2']],df['output'],population_size,generations,fitness_func)
 GEPProcess.VisualizeResults()
