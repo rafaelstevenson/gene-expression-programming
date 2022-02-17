@@ -1,8 +1,9 @@
+import math
 import random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import math
+from sklearn.metrics import r2_score
 #random.seed(101)
 
 
@@ -31,6 +32,7 @@ class GeneExpressionProgramming():
 
         self.operator_probabilities = operator_probabilities
 
+
     def VisualizeResults(self):
         ##Visualize results: plot [averagefitness, best fitness] vs generation
         average_fitness = [self.gen_pop_fit_history[i]['Mean Fitness'] for i in range(self.ngenerations + 1)]
@@ -45,7 +47,7 @@ class GeneExpressionProgramming():
         plt.title('Fitness Value vs Generation')
         plt.show()
 
-    def RunGEP(self, x, y, popsize, ngenerations):
+    def RunGEP(self, x, y, popsize, ngenerations, fitness_func):
 
         def AddGenInfo(gen_pop_fit_history, generation, population, fitness):
 
@@ -180,31 +182,50 @@ class GeneExpressionProgramming():
             prediction = float(expr_tree[0][0])
             return prediction
 
-        def EvalFitness(chromosome, x, y):
+        def EvalFitness(chromosome, x, y, fitness_func):
             '''Take the string of a single chromosome and change it to Expression Tree
             then perform prediction with the ET and calculate fitness from
             the prediction against the groundtruth data or label'''
             ##Take a string of chrom,change from string to executable ET then evaluate its fitness from dataset
+            if fitness_func == 'mse':
+                squared_error_list = []
+                for i in range(len(pd.DataFrame(x))):
+                    variable_dict = {}
+                    nth_input = 0
+                    for term in self.term_set:
+                        variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
+                        nth_input += 1
 
-            squared_error_list = []
-            for i in range(len(pd.DataFrame(x))):
-                variable_dict = {}
-                nth_input = 0
-                for term in self.term_set:
-                    variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
-                    nth_input += 1
+                    prediction = EvaluateET(chromosome, variable_dict)
+                    # print(prediction)
+                    squared_error = (prediction - y[i]) ** 2
+                    squared_error_list.append(squared_error)
 
-                prediction = EvaluateET(chromosome, variable_dict)
-                # print(prediction)
-                squared_error = (prediction - y[i]) ** 2
-                squared_error_list.append(squared_error)
+                import statistics
+                mse = statistics.mean(squared_error_list)
+                # fitness
+                mean_fitness_currchrom = 1000 / (1 + mse)
 
-            import statistics
-            mse = statistics.mean(squared_error_list)
-            # fitness
-            mean_fitness_currchrom = 1000 / (1 + mse)
+                return mean_fitness_currchrom
 
-            return mean_fitness_currchrom
+            elif fitness_func == 'r2':
+                prediction_list = []
+                for i in range(len(pd.DataFrame(x))):
+                    variable_dict = {}
+                    nth_input = 0
+                    for term in self.term_set:
+                        variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
+                        nth_input += 1
+
+                    prediction = EvaluateET(chromosome, variable_dict)
+                    prediction_list.append(prediction)
+
+                r2_result = r2_score(y, prediction_list) * 1000
+                if r2_result <= 0:
+                    r2_result = 1e-6
+
+                return r2_result
+
 
         def InitializePopulation(popsize):
             '''Initialize a list of population sized popsize randomly'''
@@ -497,7 +518,7 @@ Chromosome length: {self.chrom_length}
         while generation <= ngenerations:
 
             # Perform EvalFitness on every chromosome on current generation's population
-            fitness = [EvalFitness(chromosome, x, y) for chromosome in population].copy()
+            fitness = [EvalFitness(chromosome, x, y, fitness_func) for chromosome in population].copy()
             print(f'Gen:{generation} Fitness Calculation completed')
 
             self.gen_pop_fit_history = AddGenInfo(self.gen_pop_fit_history, generation, population,
