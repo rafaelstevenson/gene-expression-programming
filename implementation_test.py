@@ -4,7 +4,7 @@ from GEP import GeneExpressionProgramming
 
 df = pd.read_excel('../testing_datasets/sqrt_test_func_dataset.xls')
 
-func_set = ['+','-','*','/', '(sqrt)']
+func_set = ['+','-','*','/', '(sqrt)', 'alo']
 
 term_set = ['a','b']
 operator_probabilities = {
