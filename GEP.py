@@ -157,7 +157,10 @@ class GeneExpressionProgramming():
                 elif representation=='(gau)':
                     result = np.random.normal(1)
                 elif representation=='(X2)':
-                    result = a**2
+                    if a>1e4:
+                        result = 1e6
+                    else:
+                        result = a**2
 
                 return str(result)
 
