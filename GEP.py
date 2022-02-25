@@ -18,7 +18,7 @@ class GeneExpressionProgramming():
         self.func_set = func_set
         self.term_set = term_set
 
-        self.one_arity_func = ['(sqrt)', '(sin)', '(exp)', '(ln)', '(inv)', '(gau)']
+        self.one_arity_func = ['(sqrt)', '(sin)', '(exp)', '(ln)', '(inv)', '(gau)', '(X2)']
         self.two_arity_func = ['+', '-', '*', '/']
 
         self.max_arity = 1
@@ -156,6 +156,8 @@ class GeneExpressionProgramming():
                     result = 1/a
                 elif representation=='(gau)':
                     result = np.random.normal(1)
+                elif representation=='(X2)':
+                    result = a**2
 
                 return str(result)
 
