@@ -495,7 +495,6 @@ class GeneExpressionProgramming():
             '''Perform replication'''
             new_population = population
             return new_population
-
             ########################################################################################
 
         print(f'''
@@ -573,8 +572,8 @@ Chromosome length: {self.chrom_length}
             print(f'Elitism: Gen {generation} --> Gen {generation + 1}')
 
             generation += 1  # generation +1 End of a new generation
-        final_fittest = self.gen_pop_fit_history[ngenerations]['Fittest Chromosome']
-        final_fittest = ''.join(final_fittest)
+        final_fittest_list = self.gen_pop_fit_history[ngenerations]['Fittest Chromosome']
+        final_fittest = ''.join(final_fittest_list)
         final_fitness = self.gen_pop_fit_history[ngenerations]['Max Fitness Value']
         print(f'''
 =========================================================
@@ -583,4 +582,5 @@ Fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}
 =========================================================
         ''')
         f = open("result.txt","w+")
-        f.write(f"Fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}")
+        f.write(f"After {generation} generations, fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}\n in list {final_fittest_list}")
+
