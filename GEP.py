@@ -45,6 +45,7 @@ class GeneExpressionProgramming():
         plt.xlabel('Generation')
         plt.ylabel('Fitness Value (Max 1000)')
         plt.title('Fitness Value vs Generation')
+        plt.savefig('Fitness Value vs Generation.png')
         plt.show()
 
     def RunGEP(self, x, y, popsize, ngenerations, fitness_func):
