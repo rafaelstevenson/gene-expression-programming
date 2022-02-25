@@ -526,7 +526,7 @@ Chromosome length: {self.chrom_length}
 
             gen_fittest = self.gen_pop_fit_history[generation]['Fittest Chromosome'].copy()
             gen_fittest = ''.join(gen_fittest)
-            fittest_value = self.gen_pop_fit_history[generation]['Max Fitness Value'].copy()
+            fittest_value = self.gen_pop_fit_history[generation]['Max Fitness Value']
             print(f'Gen:{generation} Fittest chromosome:({gen_fittest})     Fitness value:{fittest_value}')
             #print(self.gen_pop_fit_history)
 
