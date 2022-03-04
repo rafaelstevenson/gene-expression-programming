@@ -9,7 +9,7 @@ from sklearn.metrics import r2_score
 
 class GeneExpressionProgramming():
 
-    def __init__(self, nhead, func_set, term_set, operator_probabilities):
+    def __init__(self, nhead, func_set, term_set, const_range, operator_probabilities):
 
         self.gen_pop_fit_history = {}
         self.ngenerations = None
@@ -29,6 +29,9 @@ class GeneExpressionProgramming():
 
         self.ntail = self.nhead * (self.max_arity - 1) + 1
         self.chrom_length = self.nhead + self.ntail
+
+        self.dc_length = self.ntail
+        self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
 
         self.operator_probabilities = operator_probabilities
 
@@ -105,10 +108,16 @@ class GeneExpressionProgramming():
             expr_tree = ChromToET(chromosome)
             for i in range(len(expr_tree)): #iterate rows
                 el = 0
+                el_dc = 0
                 for element in expr_tree[i]: #iterate elements in a row
                     if element in variable_dict.keys():
                         expr_tree[i][el] = str(variable_dict[element])
+                    elif element == '?':
+                        expr_tree[i][el] = str(self.const_list[el_dc])
+                        el_dc += 1
+
                     el += 1
+
 
             def operate_two_arity(representation, a, b):
                 a = float(a)
@@ -199,8 +208,9 @@ class GeneExpressionProgramming():
                     variable_dict = {}
                     nth_input = 0
                     for term in self.term_set:
-                        variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
-                        nth_input += 1
+                        if term != '?':
+                            variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
+                            nth_input += 1
 
                     prediction = EvaluateET(chromosome, variable_dict)
                     # print(prediction)
@@ -249,7 +259,9 @@ class GeneExpressionProgramming():
                     chromosome.append(random.choice(self.term_set))
 
                 # concatenate head+tail
-                #chromosome = list(head + tail)
+                #chromosome = list(head +
+                for i in range(self.dc_length):
+                    chromosome.append(str(random.randint(0,self.dc_length-1)))
 
                 # add to population
                 population.append(chromosome.copy())
@@ -281,6 +293,8 @@ class GeneExpressionProgramming():
                     elif index >= self.nhead:  # if randomizer picks to mutate tail region
                         chromosome[index] = random.choice(self.term_set)
 
+                    index_dc = -random.randint(1, self.dc_length)
+                    chromosome[index_dc] = str(random.randint(0,self.dc_length-1))
                 new_population.append(chromosome.copy())
 
             return new_population
@@ -510,6 +524,7 @@ Generations:{ngenerations}
 Function set: {self.func_set}
 Terminal set: {self.term_set}
 Chromosome length: {self.chrom_length}
+Constant list: {self.const_list}
 =========================================================
         ''')
 

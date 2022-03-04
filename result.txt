@@ -1,0 +1,2 @@
+After 200 generations, fittest Chromosome Result:(+*+aa(sqrt)?b?bb?aab11301051) with fitness value 999.1361708403089
+ in list ['+', '*', '+', 'a', 'a', '(sqrt)', '?', 'b', '?', 'b', 'b', '?', 'a', 'a', 'b', '1', '1', '3', '0', '1', '0', '5', '1']
