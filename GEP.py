@@ -31,7 +31,8 @@ class GeneExpressionProgramming():
         self.chrom_length = self.nhead + self.ntail
 
         self.dc_length = self.ntail
-        self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
+        #self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
+        self.const_list = [3.0,1.1,4.0,1.1,4.0,1.1,4.0,1.1]
 
         self.operator_probabilities = operator_probabilities
 
@@ -106,9 +107,10 @@ class GeneExpressionProgramming():
 
             # Change string to list in each row of ET and change variables to sample value
             expr_tree = ChromToET(chromosome)
+            el_dc = 0
             for i in range(len(expr_tree)): #iterate rows
                 el = 0
-                el_dc = 0
+                #el_dc = 0
                 for element in expr_tree[i]: #iterate elements in a row
                     if element in variable_dict.keys():
                         expr_tree[i][el] = str(variable_dict[element])
@@ -230,8 +232,9 @@ class GeneExpressionProgramming():
                     variable_dict = {}
                     nth_input = 0
                     for term in self.term_set:
-                        variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
-                        nth_input += 1
+                        if term != '?':
+                            variable_dict[term] = pd.DataFrame(x).iloc[i, nth_input]
+                            nth_input += 1
 
                     prediction = EvaluateET(chromosome, variable_dict)
                     prediction_list.append(prediction)
@@ -593,6 +596,7 @@ Constant list: {self.const_list}
 
             generation += 1  # generation +1 End of a new generation
         final_fittest_list = self.gen_pop_fit_history[ngenerations]['Fittest Chromosome']
+        final_fittest_ET = ChromToET(final_fittest_list)
         final_fittest = ''.join(final_fittest_list)
         final_fitness = self.gen_pop_fit_history[ngenerations]['Max Fitness Value']
         print(f'''
@@ -602,5 +606,5 @@ Fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}
 =========================================================
         ''')
         f = open("result.txt","w+")
-        f.write(f"After {generation} generations, fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}\n in list {final_fittest_list}")
+        f.write(f"After {generation} generations, fittest Chromosome Result:({final_fittest}) with fitness value {final_fitness}\n in list {final_fittest_list}\n constant list: {list(self.const_list)}\nExpression Tree: {final_fittest_ET}")
 
