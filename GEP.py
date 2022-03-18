@@ -31,8 +31,8 @@ class GeneExpressionProgramming():
         self.chrom_length = self.nhead + self.ntail
 
         self.dc_length = self.ntail
-        #self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
-        self.const_list = [3.0,1.1,4.0,1.1,4.0,1.1,4.0,1.1]
+        self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
+        #self.const_list = [3.0,1.1,4.0,1.1,4.0,1.1,4.0,1.1]
 
         self.operator_probabilities = operator_probabilities
 
