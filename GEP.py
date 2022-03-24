@@ -52,9 +52,20 @@ class GeneExpressionProgramming():
         plt.savefig('Fitness Value vs Generation.png')
         plt.show()
 
+        average_fitness_mse = [self.gen_pop_fit_history[i]['Mean mse'] for i in range(self.ngenerations + 1)]
+        max_fitness_mse = [self.gen_pop_fit_history[i]['Fittest mse'] for i in range(self.ngenerations + 1)]
+        #plt.plot(generation, average_fitness_mse, label='Avg MSE', marker='.')
+        plt.plot(generation, max_fitness_mse, label='Fittest MSE', marker='.')
+        plt.legend()
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Value (Min 0)')
+        plt.title('MSE vs Generation')
+        plt.savefig('MSE vs Generation.png')
+        plt.show()
+
     def RunGEP(self, x, y, popsize, ngenerations, fitness_func):
 
-        def AddGenInfo(gen_pop_fit_history, generation, population, fitness):
+        def AddGenInfo(gen_pop_fit_history, generation, population, fitness, fitness_mse):
 
             '''Add an entry to the generation:{population,history} info dictionary
             from current generation, population ORF list and fitness list'''
@@ -63,7 +74,9 @@ class GeneExpressionProgramming():
                 'Population': population, 'Fitness': fitness,
                 'Max Fitness Value': max(fitness),
                 'Fittest Chromosome': population[fitness.index(max(fitness))].copy(),
-                'Mean Fitness': statistics.mean(fitness)
+                'Mean Fitness': statistics.mean(fitness),
+                'Fittest mse': min(fitness_mse),
+                'Mean mse': statistics.mean(fitness_mse)
             }
             #'Chromosome,Fitness': set(zip(population, fitness)),
             #print(gen_pop_fit_history[generation])
@@ -572,15 +585,17 @@ Constant list: {self.const_list}
 
             # Perform EvalFitness on every chromosome on current generation's population
             fitness = [EvalFitness(chromosome, x, y, fitness_func) for chromosome in population].copy()
+            fitness_mse = list((1000/np.array(fitness.copy()))-1).copy()
             print(f'Gen:{generation} Fitness Calculation completed')
 
             self.gen_pop_fit_history = AddGenInfo(self.gen_pop_fit_history, generation, population,
-                                                  fitness)  # Update history library
+                                                  fitness, fitness_mse)  # Update history library
 
             gen_fittest = self.gen_pop_fit_history[generation]['Fittest Chromosome'].copy()
             gen_fittest = ''.join(gen_fittest)
             fittest_value = self.gen_pop_fit_history[generation]['Max Fitness Value']
-            print(f'Gen:{generation} Fittest chromosome:({gen_fittest})     Fitness value:{fittest_value}')
+            fittest_mse = self.gen_pop_fit_history[generation]['Fittest mse']
+            print(f'Gen:{generation} Fittest chromosome:({gen_fittest})     Fitness value:{fittest_value}       MSE:{fittest_mse}')
             #print(self.gen_pop_fit_history)
 
             if generation==ngenerations:  # break while loop if last generation or (gen==ngen)
