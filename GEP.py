@@ -31,6 +31,7 @@ class GeneExpressionProgramming():
         self.chrom_length = self.nhead + self.ntail
 
         self.dc_length = self.ntail
+        self.total_length = self.chrom_length+self.dc_length
         self.const_list = np.random.uniform(const_range[0],const_range[1],self.dc_length)
         #self.const_list = [3.0,1.1,4.0,1.1,4.0,1.1,4.0,1.1]
 
@@ -520,19 +521,28 @@ class GeneExpressionProgramming():
                     first_parent = recombination_pool[0]
                     second_parent = recombination_pool[1]
 
-                recombination_indexes = sorted(random.sample(range(1, len(chromosome) - 2), 2))
+                recombination_indexes = sorted(random.sample(range(1, self.chrom_length - 2), 2))
+                recombination_indexes_dc = sorted(random.sample(range(self.chrom_length+1, self.total_length - 2), 2))
 
                 recombination_start_index = recombination_indexes[0]
                 recombination_end_index = recombination_indexes[1]
+                recombination_start_index_dc = recombination_indexes_dc[0]
+                recombination_end_index_dc = recombination_indexes_dc[1]
 
-                first_end_original = first_parent[recombination_end_index+1:]
-                second_end_original = second_parent[recombination_end_index+1:]
+                first_end_original = first_parent[recombination_end_index+1:self.chrom_length]
+                second_end_original = second_parent[recombination_end_index+1:self.chrom_length]
+                first_end_original_dc = first_parent[recombination_end_index_dc+1:]
+                second_end_original_dc = second_parent[recombination_end_index_dc+1:]
 
                 first_child = first_parent[0:recombination_start_index]
                 second_child = second_parent[0:recombination_start_index]
+                first_child_dc = first_parent[self.chrom_length:recombination_start_index_dc]
+                second_child_dc = second_parent[self.chrom_length:recombination_start_index_dc]
 
                 first_cross = first_parent[recombination_start_index:recombination_end_index+1]
                 second_cross = second_parent[recombination_start_index:recombination_end_index+1]
+                first_cross_dc = first_parent[recombination_start_index_dc:recombination_end_index_dc+1]
+                second_cross_dc = second_parent[recombination_start_index_dc:recombination_end_index_dc+1]
 
 
                 for element in second_cross:
@@ -543,6 +553,20 @@ class GeneExpressionProgramming():
                 for element in first_end_original:
                     first_child.append(element)
                 for element in second_end_original:
+                    second_child.append(element)
+
+                for element in first_child_dc:
+                    first_child.append(element)
+                for element in second_cross_dc:
+                    first_child.append(element)
+                for element in first_end_original_dc:
+                    first_child.append(element)
+
+                for element in second_child_dc:
+                    second_child.append(element)
+                for element in first_cross_dc:
+                    second_child.append(element)
+                for element in second_end_original_dc:
                     second_child.append(element)
 
                 new_population.append(first_child.copy())
